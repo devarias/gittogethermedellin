@@ -59,4 +59,4 @@ jobs:
 
       - name: 🚀 Aplicar cambios (solo en main)
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve
+        run: terraform destroy -auto-approve
