@@ -15,7 +15,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "ec2_instance" {
-  ami           = "ami-0c55b159cbfafe1f0" # AMI Amazon Linux 2
+  ami           = "ami-005e54dee72cc1d00" # AMI Amazon Linux 2
   instance_type = var.instance_type
 
   tags = {
