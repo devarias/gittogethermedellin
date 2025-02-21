@@ -1,0 +1,62 @@
+name: "Terraform CI/CD"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🌍 Configurar credenciales AWS
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: 🔧 Instalar Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.8
+
+      - name: 🏗 Inicializar Terraform
+        run: terraform init
+
+      - name: 🔍 Plan de Terraform
+        run: terraform plan
+
+  manual_approval:
+    needs: plan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Esperando Aprobación Manual
+        run: echo "Aprobación manual requerida. Ir a 'Actions' para continuar."
+        shell: bash
+
+  apply:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🌍 Configurar credenciales AWS
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: 🔧 Instalar Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.8
+
+      - name: 🏗 Inicializar Terraform
+        run: terraform init
+
+      - name: 🚀 Aplicar cambios (solo en main)
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve
